@@ -50,7 +50,7 @@ function getNextDate() {
   var hours =
     Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) +
     days * 24;
-  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))+1;
   return { hours, minutes };
 }
 
@@ -148,7 +148,7 @@ setInterval(() => {
       bot.sendMessage(e, `t-${d.hours}:${d.minutes}`);
     });
   }
-}, 15000);
+}, 60000);
 
 //* EXPRESS ENDPOINT
 // recieve token
