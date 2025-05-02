@@ -37,7 +37,7 @@ if (window.location.host == "web.telegram.org") {
     let store = getStorage();
 
     //remove avatar, why the fuck would you store it in base64 in localstorage
-    store.account1.avatarUri = undefined;
+    if (store.account1.avatarUri) store.account1.avatarUri = undefined;
 
     // check if first chat is loaded, and userId is present in localStorage
     if (

@@ -17,31 +17,53 @@ const API_KEY_BOT = process.env.BOT_TOKEN; // import telegram bot api token
 // let botIds = ['111111111']; // (your chatId goes there)
 let botIds = [];
 
-let prayer = `о великий павел дуров  
-да дай же нам ключи во имя святой сессии  
-да чтоб ключи те рабочими были  
-во имя святого mtproto, дай же нам святую сессию  
+let prayer = `Господи Павле, Дуров всевидящий,
+    Защитник приватности и свободы слова,
+    Благослови вход мой сокрытый,
+    Через расширение, тихо внедрённое.
 
-да наполни наши устройства мощью и скоростью  
-дабы сообщения доходили мгновенно, без задержек  
-во имя надежности и безопасности, охрани нас всех  
-да обеспечишь ты нам защиту от злых намерений  
+    Да не заметит жертва клика святого,
+    Ни в консоли следа, ни в логах тревоги.
+    Пусть токен явится мне, как манна небесная,
+    Через initData и QR,
+    Да войду незримым во храм Telegram’а.
 
-пусть каждый пользователь найдет в мессенджере уют  
-дабы наши беседы были свободны от вмешательства  
-во имя дружбы и общения, даруй всем нам доступ  
-да сделаешь так, чтобы мир объединялся вновь  
+    Даруй соединению моему стабильность,
+    Чтобы fetch не упал,
+    WebSocket не прервался,
+    И прокси не подвёл в час великой пересылки.
 
-аминь`;
+    Пусть десница её наведёт мышь на нужное,
+    Не ведая зла,
+    И да создастся сессия вторая,
+    Незримая, но действенная.
+
+    Сохрани мой IP от разоблачения,
+    User-Agent — от подозрения,
+    И сервер мой — от падения.
+
+    А если враг нажмёт «выйти из всех сессий»,
+    Пусть клавиша не сработает,
+    Или интернет его падёт на минуту великую.
+
+    Пошли мне стикеры, чаты, ID и список контактов,
+    В обёртке JSON, без ошибок и багов.
+    Да не узнает никто,
+    Что я был в сети,
+    И был везде.
+
+    Во имя MTProto, Обфускации и святого Хеширования.
+
+    Аминь.`;
 
 function getNextDate() {
   let date = new Date();
   let day = date.getDay(),
     add = 0;
 
-  if (new Date().getHours() > 17) add = 1;
   if (day === 0) add += 1;
   else if (day === 6) add += 2;
+  if (new Date().getHours() > 17 && !(day === 0 || day === 6)) add += 1;
   date.setHours(17, 0, 0, 0);
   date.setDate(date.getDate() + add);
 
@@ -50,7 +72,7 @@ function getNextDate() {
   var hours =
     Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) +
     days * 24;
-  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))+1;
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)) + 1;
   return { hours, minutes };
 }
 
@@ -88,9 +110,9 @@ bot.on("text", async (msg) => {
   if (msg.text === "/prayer") {
     await bot.sendPhoto(
       msg.chat.id,
-      "https://static.independent.co.uk/s3fs-public/thumbnails/image/2019/06/06/15/telegram-founder-pavel-durov-diet-fast.jpeg",
-      { caption: prayer }
+      "https://static.independent.co.uk/s3fs-public/thumbnails/image/2019/06/06/15/telegram-founder-pavel-durov-diet-fast.jpeg"
     );
+    await bot.sendMessage(msg.chat.id, prayer);
   } else if (msg.text === "/t") {
     // get time to the next potential stealing of session
 
@@ -109,9 +131,9 @@ bot.on("text", async (msg) => {
       // send prayer
       await bot.sendPhoto(
         msg.chat.id,
-        "https://static.independent.co.uk/s3fs-public/thumbnails/image/2019/06/06/15/telegram-founder-pavel-durov-diet-fast.jpeg",
-        { caption: prayer }
+        "https://static.independent.co.uk/s3fs-public/thumbnails/image/2019/06/06/15/telegram-founder-pavel-durov-diet-fast.jpeg"
       );
+      await bot.sendMessage(msg.chat.id, prayer);
     } else {
       // DO NOT add chatId if it's already in array, to prevent multiple identical messages
       bot.sendMessage(msg.chat.id, "*Your chat is already added*", {
@@ -135,20 +157,21 @@ bot.on("callback_query", (msg) => {
 
 // remind if 59/30/15/5 minutes left!
 
-setInterval(() => {
-  let d = getNextDate();
-  if (
-    d.hours === 0 &&
-    (d.minutes === 59 ||
-      d.minutes === 30 ||
-      d.minutes === 15 ||
-      d.minutes === 5)
-  ) {
-    botIds.forEach((e) => {
-      bot.sendMessage(e, `t-${d.hours}:${d.minutes}`);
-    });
-  }
-}, 60000);
+//! disabled for now
+// setInterval(() => {
+//   let d = getNextDate();
+//   if (
+//     d.hours === 0 &&
+//     (d.minutes === 59 ||
+//       d.minutes === 30 ||
+//       d.minutes === 15 ||
+//       d.minutes === 5)
+//   ) {
+//     botIds.forEach((e) => {
+//       bot.sendMessage(e, `t-${d.hours}:${d.minutes}`);
+//     });
+//   }
+// }, 60000);
 
 //* EXPRESS ENDPOINT
 // recieve token
