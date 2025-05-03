@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "CacheCleaner",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Extention that manages storage and clears up cache",
 
   "icons": {

